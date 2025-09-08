@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>⚡ SK Team — 2X Multi-Step Plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;font-family:Arial;background:#000;color:#00ffea}
+.container{width:420px;background:rgba(0,0,0,0.65);border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(0,255,234,0.3);text-align:center}
+h2{margin-bottom:15px}
+input,select,button{width:100%;padding:12px;margin-bottom:12px;border-radius:8px;font-size:15px}
+input,select{background:#111;border:1px solid #00ffea;color:#00ffea}
+button{background:linear-gradient(90deg,#ff00d4,#00ffea);border:none;color:#000;font-weight:bold;cursor:pointer}
+.result{margin-top:12px;padding:12px;border-radius:8px;background:rgba(0,0,0,0.3);text-align:left}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>⚡ SK Team — 2X Plan Calculator</h2>
+  <select id="steps">
+    <option value="7">7 Step Plan</option>
+    <option value="8">8 Step Plan</option>
+    <option value="10">10 Step Plan</option>
+  </select>
+  <input id="amount" type="number" placeholder="Apna amount likhiye">
+  <!-- ✅ Button ka text wahi reh gaya -->
+  <button onclick="calculatePlan()">Generate Plan</button>
+  <div id="result" class="result"></div>
+</div>
+
+<script>
+function calculatePlan(){
+  let total=parseFloat(document.getElementById("amount").value);
+  let n=parseInt(document.getElementById("steps").value);
+  if(isNaN(total)||total<=0){
+    document.getElementById("result").innerHTML="⚠️ Kripya sahi amount daaliye.";
+    speak("Kripya sahi amount daaliye.", "hi-IN");
+    return;
+  }
+  
+  let r=2; // 2X multiplier
+  let ratioSum=(Math.pow(r,n)-1)/(r-1);
+  let start=Math.floor(total/ratioSum);if(start<1)start=1;
+  
+  let steps=[],cur=start;
+  for(let i=0;i<n;i++){steps.push(cur);cur*=r;}
+  
+  let planTotal=steps.reduce((a,b)=>a+b,0);
+  let html="<h3>Total Entered: Rs "+total+"</h3><ul>";
+  steps.forEach((s,i)=>{html+="<li>Stage "+(i+1)+": Rs "+s+"</li>";});
+  html+="</ul><b>Total Required for "+n+" Step 2X Plan: Rs "+planTotal+"</b>";
+  
+  document.getElementById("result").innerHTML=html;
+
+  // ✅ Hindi/Urdu voice
+  speak("Aapko "+n+" step 2x plan banane ke liye kul "+planTotal+" rupaye required hain.", "hi-IN");
+}
+
+// 🔊 Text-to-Speech (Hindi/Urdu)
+function speak(text, lang="hi-IN"){  
+  let msg=new SpeechSynthesisUtterance(text);
+  msg.lang=lang;   // Hindi: "hi-IN" | Urdu: "ur-PK"
+  msg.rate=1;      
+  window.speechSynthesis.cancel(); 
+  window.speechSynthesis.speak(msg);
+}
+</script>
+</body>
+</html>
